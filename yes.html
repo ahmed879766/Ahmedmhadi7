@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تبرع الآن | معاً للأمل</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e91e63;
+            --primary-hover: #d81b60;
+            --paypal-color: #0070ba;
+            --bg-color: #f0f2f5;
+            --whatsapp-green: #25D366;
+            --whatsapp-dark: #128C7E;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            animation: fadeInPage 0.8s ease-out;
+        }
+
+        .donation-container {
+            width: 100%; max-width: 450px;
+            background: #fff; border-radius: 24px;
+            overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px; animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        /* لغات الموقع */
+        .lang-switcher { position: absolute; top: 15px; left: 15px; z-index: 10; }
+        .lang-btn {
+            background: rgba(0, 0, 0, 0.3); color: white; border: 1px solid rgba(255,255,255,0.4);
+            padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 12px;
+            backdrop-filter: blur(8px); transition: 0.3s;
+        }
+
+        /* معرض الصور (Slider) */
+        .slider-container {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            background: #000;
+        }
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 10px;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+        .nav-btn {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .content-body { padding: 25px; text-align: center; }
+
+        /* أزرار المبالغ */
+        .amounts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .amount-btn {
+            background: #fff; border: 2px solid #eee; padding: 12px 5px;
+            border-radius: 12px; font-weight: bold; cursor: pointer;
+            transition: 0.3s; font-size: 16px;
+        }
+        .amount-btn.active { 
+            background: var(--primary-color); 
+            color: white; 
+            border-color: var(--primary-color); 
+            box-shadow: 0 8px 15px rgba(233, 30, 99, 0.3); 
+        }
+
+        .custom-input-wrapper { position: relative; margin-bottom: 25px; }
+        .custom-input-wrapper input {
+            width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 12px;
+            text-align: center; font-size: 18px; box-sizing: border-box; outline: none;
+            transition: 0.3s;
+        }
+        .custom-input-wrapper input:focus { border-color: var(--primary-color); }
+        .currency-label { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-weight: bold; color: #aaa; }
+
+        /* أزرار الدفع */
+        .btn-action {
+            width: 100%; padding: 16px; border-radius: 12px; border: none;
+            font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
+        .btn-stripe { background-color: var(--primary-color); color: white; }
+        .btn-stripe:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn-paypal { background-color: var(--paypal-color); color: white; }
+        .btn-paypal:hover { transform: translateY(-2px); }
+
+        /* حركة نبض القلب */
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .fa-heart.pulse { animation: heartBeat 1.2s infinite; }
+
+        /* مربع الحوار والنجوم الطائرة */
+        .animated-quote-box {
+            background-color: #fffafb; border: 1px dashed #e91e63; border-radius: 15px;
+            padding: 20px; margin: 25px 0; position: relative; overflow: hidden;
+            display: flex; align-items: center; gap: 15px; text-align: right;
+        }
+        .quote-icon { font-size: 28px; color: var(--primary-color); z-index: 2; }
+        .quote-text { font-size: 14px; color: #555; z-index: 2; margin: 0; font-weight: 600; line-height: 1.4; }
+
+        .quote-bg-animation { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .particle { position: absolute; color: rgba(233, 30, 99, 0.2); animation: floatParticle 4s infinite linear; }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100%) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-20%) rotate(360deg); opacity: 0; }
+        }
+
+        /* واتساب ثابت */
+        .whatsapp-fixed-footer { margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        .whatsapp-btn {
+            background-color: var(--whatsapp-green); color: white; border-radius: 12px;
+            padding: 14px; font-size: 16px; font-weight: bold; text-decoration: none;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .whatsapp-btn:hover { background-color: var(--whatsapp-dark); transform: scale(1.02); }
+
+        .footer-info { font-size: 11px; color: #999; margin-top: 12px; }
+
+        /* حركات الصفحة */
+        @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="donation-container">
+    <div class="lang-switcher">
+        <button class="lang-btn"><i class="fa fa-globe"></i> العربية</button>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider-track" id="sliderTrack">
+            <div class="slide"><img src="Jh.png" alt="1"></div>
+            <div class="slide"><img src="Kk.png" alt="2"></div>
+            <div class="slide"><img src="Kl.png" alt="3"></div>
+            <div class="slide"><img src="Kn.png" alt="4"></div>
+            <div class="slide"><img src="Km.png" alt="5"></div>
+        </div>
+        <div class="slider-nav">
+            <button class="nav-btn" onclick="moveSlide(-1)"><i class="fa fa-chevron-right"></i></button>
+            <button class="nav-btn" onclick="moveSlide(1)"><i class="fa fa-chevron-left"></i></button>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <div class="amounts-grid">
+            <button class="amount-btn" onclick="selectAmount(30, this)">30€</button>
+            <button class="amount-btn" onclick="selectAmount(50, this)">50€</button>
+            <button class="amount-btn active" onclick="selectAmount(100, this)">100€</button>
+            <button class="amount-btn" onclick="selectAmount(150, this)">150€</button>
+            <button class="amount-btn" onclick="selectAmount(200, this)">200€</button>
+            <button class="amount-btn" onclick="selectAmount(500, this)">500€</button>
+        </div>
+
+        <div class="custom-input-wrapper">
+            <input type="number" id="customAmount" placeholder="أدخل مبلغاً مخصصاً" oninput="clearSelection()" value="100">
+            <span class="currency-label">€</span>
+        </div>
+
+        <button class="btn-action btn-stripe" onclick="processPayment('Stripe')">
+            <i class="fa-solid fa-heart pulse"></i> تبرع ببطاقة بنكية
+        </button>
+
+        <button class="btn-action btn-paypal" onclick="processPayment('PayPal')">
+            <i class="fa-brands fa-paypal"></i> تبرع بواسطة PayPal
+        </button>
+
+        <div class="animated-quote-box">
+            <div class="quote-bg-animation">
+                <i class="fa fa-star particle" style="left:10%; animation-delay:0s; font-size:10px;"></i>
+                <i class="fa fa-heart particle" style="left:30%; animation-delay:1s; font-size:12px;"></i>
+                <i class="fa fa-star particle" style="left:50%; animation-delay:2s; font-size:8px;"></i>
+                <i class="fa fa-heart particle" style="left:70%; animation-delay:3s; font-size:14px;"></i>
+                <i class="fa fa-star particle" style="left:90%; animation-delay:1.5s; font-size:11px;"></i>
+            </div>
+            <i class="fa-solid fa-hands-praying quote-icon"></i>
+            <p class="quote-text">كل مساهمة منك هي أمل لمساعدة اسرة محتاجة.</p>
+        </div>
+
+        <div class="whatsapp-fixed-footer">
+            <a href="https://wa.me/972592509307" class="whatsapp-btn" target="_blank">
+                <i class="fa-brands fa-whatsapp"></i> تواصل معنا عبر واتساب
+            </a>
+        </div>
+
+        <div class="footer-info">
+            <p>© 2024-2026 جميع الحقوق محفوظة</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // معرض الصور
+    let currentSlide = 0;
+    const track = document.getElementById('sliderTrack');
+    const totalSlides = 5;
+
+    function moveSlide(direction) {
+        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+        track.style.transform = `translateX(${currentSlide * 100}%)`;
+    }
+
+    // اختيار المبلغ
+    function selectAmount(amount, element) {
+        document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        document.getElementById('customAmount').value = amount;
+    }
+    function clearSelection() { document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active')); }
+
+    // الدفع
+    function processPayment(method) {
+        const amount = document.getElementById('customAmount').value;
+        if (!amount || amount <= 0) { alert("يرجى إدخال مبلغ صحيح"); return; }
+        
+        if (method === 'PayPal') {
+            const paypalUrl = `https://www.paypal.me/FadiabuGhanem/${amount}`;
+            window.open(paypalUrl, '_blank');
+        } else {
+            alert("يرجى التواصل عبر الواتساب لإتمام التبرع بالبطاقة البنكية.");
+            window.open("https://wa.me/972592509307", '_blank');
+        }
+    }
+</script>
+
+</body>
+</html>
